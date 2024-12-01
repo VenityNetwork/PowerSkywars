@@ -29,6 +29,8 @@ public class PowerSkywars extends PluginBase {
     @Override
     public void onEnable() {
         instance = this;
+        Utils.clearGameWorlds();
+
         saveDefaultConfig();
         createMapsFolder();
         saveResource("maps_config.yml");

@@ -1,6 +1,5 @@
 package com.venitymc.PowerSkywars.game;
 
-import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.LogLevel;
 import cn.nukkit.utils.Logger;
 import com.venitymc.PowerSkywars.PowerSkywars;
@@ -9,12 +8,12 @@ import org.apache.logging.log4j.LogManager;
 
 public class SkywarsLogger implements Logger {
 
-    private final String pluginName;
+    private final String gameId;
     private final org.apache.logging.log4j.Logger log;
 
     public SkywarsLogger(SkywarsGame game) {
         log = LogManager.getLogger(PowerSkywars.getInstance().getDescription().getMain());
-        this.pluginName = game.getId();
+        gameId = game.getId();
     }
 
     @Override
@@ -99,12 +98,12 @@ public class SkywarsLogger implements Logger {
 
     @Override
     public void log(LogLevel level, String message, Throwable t) {
-        log.log(toApacheLevel(level), "[{}]: {}", this.pluginName, message, t);
+        log.log(toApacheLevel(level), "[{}]: {}", this.gameId, message, t);
     }
 
     @Override
     public void log(LogLevel level, String message) {
-        log.log(toApacheLevel(level), "[{}]: {}", this.pluginName, message);
+        log.log(toApacheLevel(level), "[{}]: {}", this.gameId, message);
     }
 
 

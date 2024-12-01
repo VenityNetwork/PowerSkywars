@@ -2,10 +2,10 @@ package com.venitymc.PowerSkywars.game.player;
 
 import cn.nukkit.Player;
 import cn.nukkit.level.Position;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.TextFormat;
 import com.venitymc.PowerSkywars.game.SkywarsCage;
 import com.venitymc.PowerSkywars.game.SkywarsGame;
+import com.venitymc.PowerSkywars.scoreboard.SkywarsScoreboard;
 import com.venitymc.PowerSkywars.session.Session;
 import com.venitymc.PowerSkywars.session.SessionManager;
 import com.venitymc.PowerSkywars.util.Utils;
@@ -20,11 +20,15 @@ public class SkywarsPlayer {
     private final CombatInfo combatInfo = new CombatInfo();
     @Getter
     private SkywarsCage cage;
-    private int killCount = 0;
+    @Getter
+    private int kills = 0;
+    @Getter
+    private final SkywarsScoreboard scoreboard;
 
     public SkywarsPlayer(Player player, SkywarsGame game) {
         this.player = player;
         this.game = game;
+        this.scoreboard = new SkywarsScoreboard(this);
     }
 
     public Player getNukkitPlayer() {
@@ -45,8 +49,10 @@ public class SkywarsPlayer {
         Position spawnPos = game.getNextSpawn();
         cage = new SkywarsCage(spawnPos.subtract(0, 1, 0));
         cage.set();
+        player.setImmobile(true);
         player.teleport(spawnPos.add(0, 0.2, 0));
         player.setGamemode(Player.ADVENTURE);
+        player.setImmobile(false);
         reset();
     }
 
@@ -81,7 +87,6 @@ public class SkywarsPlayer {
                 cage.unset();
                 break;
             case PLAYING:
-            case ENDING:
                 if (getCombatInfo().isAlive()) {
                     kill();
                 }
@@ -89,6 +94,7 @@ public class SkywarsPlayer {
         }
 
         unsetSessionGame();
+        scoreboard.remove();
     }
 
     public void kill() {
@@ -100,13 +106,21 @@ public class SkywarsPlayer {
         combatInfo.setAlive(false);
 
         if (killer != null) {
+            killer.addKill();
             game.broadcastMessage(String.format("%s %swas killed by %s", player.getDisplayName(), TextFormat.AQUA, killer.getNukkitPlayer().getDisplayName()));
         } else {
             game.broadcastMessage(String.format("%s %sdied.", player.getDisplayName(), TextFormat.AQUA));
         }
 
         reset();
+        player.sendTitle(TextFormat.RED + TextFormat.BOLD.toString() + "YOU DIED!");
         player.setGamemode(Player.SPECTATOR);
+        player.teleport(Position.fromObject(game.getMap().getMid(), game.getWorld()));
+        game.checkAlive();
+    }
+
+    public void addKill() {
+        kills++;
     }
 
     public void reset() {
