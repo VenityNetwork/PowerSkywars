@@ -366,6 +366,7 @@ public class SkywarsGame {
 
         logger.debug("Closing world...");
         world.unload(true);
+        GameManager.disposeGame(this);
     }
 
     public void ignoreChestFill(BlockChest chest){
