@@ -12,6 +12,7 @@ import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.utils.TextFormat;
+import com.venitymc.PowerSkywars.PowerSkywars;
 import com.venitymc.PowerSkywars.game.SkywarsGame;
 import com.venitymc.PowerSkywars.manager.GameManager;
 import com.venitymc.PowerSkywars.session.SessionManager;
@@ -29,6 +30,7 @@ public class EventListener implements Listener {
     public void onPlayerLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
         player.setDisplayName(TextFormat.GRAY + player.getName());
+        player.setNameTag(TextFormat.GRAY + player.getName());
     }
 
     @EventHandler
@@ -43,16 +45,20 @@ public class EventListener implements Listener {
         Player player = event.getPlayer();
         SkywarsGame game = getGame(player);
 
-        if (game == null) {
-            return;
+        if (game != null) {
+            game.quit(player);
         }
-
-        game.quit(player);
     }
 
     @EventHandler
     public void onPlayerChat(PlayerChatEvent event) {
+        event.setCancelled();
+        Player player = event.getPlayer();
+        SkywarsGame game = getGame(player);
 
+        if (game != null) {
+            game.onPlayerChat(player, event.getMessage());
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -82,7 +88,6 @@ public class EventListener implements Listener {
         }
     }
 
-
     @EventHandler
     public void onLeavesDecay(LeavesDecayEvent event) {
         event.setCancelled();
@@ -93,11 +98,12 @@ public class EventListener implements Listener {
         Entity entity = event.getEntity();
         if (entity instanceof Player player) {
             SkywarsGame game = getGame(player);
-            if (game == null) {
-                return;
+            if (game != null) {
+                event.setAttackCooldown(9);
+                game.onPlayerDamaged(event);
+            } else {
+                event.setCancelled();
             }
-
-            game.onPlayerDamaged(event);
         }
     }
 
@@ -105,11 +111,9 @@ public class EventListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         SkywarsGame game = getGame(player);
-        if (game == null) {
-            return;
+        if (game != null) {
+            game.onPlayerMoved(event);
         }
-
-        game.onPlayerMoved(event);
     }
 
 }

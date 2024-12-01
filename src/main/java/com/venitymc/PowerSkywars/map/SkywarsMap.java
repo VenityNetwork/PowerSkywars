@@ -3,6 +3,7 @@ package com.venitymc.PowerSkywars.map;
 import cn.nukkit.Server;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.TaskHandler;
 import cn.nukkit.utils.Config;
 import com.venitymc.PowerSkywars.PowerSkywars;
@@ -63,7 +64,7 @@ public class SkywarsMap {
         }
         world.getGameRules().setGameRule(GameRule.DO_MOB_SPAWNING, false);
         world.getGameRules().setGameRule(GameRule.PVP, true);
-        world.setTime(4000);
+        world.setTime(Level.TIME_DAY);
         world.stopTime();
         for(var entity : world.getEntities()){
             entity.close();
@@ -73,6 +74,11 @@ public class SkywarsMap {
 
     public List<List<Integer>> getSpawns() {
         return (List<List<Integer>>) config.get("spawns");
+    }
+
+    public Vector3 getMid() {
+        List<Integer> mid = (List<Integer>) config.get("mid");
+        return new Vector3(mid.get(0), mid.get(1), mid.get(2));
     }
 
 }
