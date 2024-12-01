@@ -42,14 +42,14 @@ public class ChestFill {
             Item.CHAINMAIL_BOOTS
     );
 
-    private static final List<String> BLOCK_NAMES = List.of(
+    private static final List<String> BLOCKS = List.of(
             Block.DIRT,
             Block.COBBLESTONE,
             Block.STONE,
             Block.OAK_PLANKS
     );
 
-    private static final List<String> FOOD_NAMES = List.of(
+    private static final List<String> FOODS = List.of(
             Item.BREAD,
             Item.CARROT,
             Item.GOLDEN_APPLE,
@@ -63,6 +63,11 @@ public class ChestFill {
             PotionType.SWIFTNESS.id(),
             PotionType.LEAPING.id(),
             PotionType.HEALING.id()
+    );
+
+    private static final List<String> PROJECTILES = List.of(
+            Item.SNOWBALL,
+            Item.EGG
     );
 
     private static <T> T listRandom(List<T> list){
@@ -88,12 +93,12 @@ public class ChestFill {
 
         int blockCount = Math.random() <= 0.5 ? 2 : 1;
         for(int i = 0; i < blockCount; i++) {
-            items.add(Item.get(listRandom(BLOCK_NAMES), 0, ThreadLocalRandom.current().nextInt(20, 64)));
+            items.add(Item.get(listRandom(BLOCKS), 0, ThreadLocalRandom.current().nextInt(20, 64)));
         }
 
         int foodCount = Math.random() <= 0.5 ? 2 : 1;
         for(int i = 0; i < foodCount; i++) {
-            items.add(Item.get(listRandom(FOOD_NAMES), 0, ThreadLocalRandom.current().nextInt(1, 5)));
+            items.add(Item.get(listRandom(FOODS), 0, ThreadLocalRandom.current().nextInt(1, 5)));
         }
 
         if(Math.random() <= 0.12){
@@ -107,6 +112,10 @@ public class ChestFill {
 
         if(Math.random() <= 0.08){
             items.add(Item.get(Item.ENDER_PEARL, 0, ThreadLocalRandom.current().nextInt(1, 3)));
+        }
+
+        if(Math.random() <= 0.4){
+            items.add(Item.get(listRandom(PROJECTILES), 0, ThreadLocalRandom.current().nextInt(8, 16)));
         }
 
         var indexes = new ObjectArrayList<Integer>();
