@@ -1,6 +1,7 @@
 package com.venitymc.PowerSkywars.map;
 
 import cn.nukkit.Server;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.scheduler.TaskHandler;
 import cn.nukkit.utils.Config;
@@ -59,6 +60,12 @@ public class SkywarsMap {
         Level world = Server.getInstance().getLevelByName(worldName);
         if (world == null) {
             throw new RuntimeException("World can't be loaded.");
+        }
+        world.getGameRules().setGameRule(GameRule.DO_MOB_SPAWNING, false);
+        world.setTime(4000);
+        world.stopTime();
+        for(var entity : world.getEntities()){
+            entity.close();
         }
         return world;
     }
