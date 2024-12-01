@@ -1,11 +1,14 @@
 package com.venitymc.PowerSkywars;
 
 import cn.nukkit.plugin.PluginBase;
-import com.venitymc.PowerSkywars.game.SkywarsGame;
+import cn.nukkit.registry.Registries;
 import com.venitymc.PowerSkywars.listener.EventListener;
+import com.venitymc.PowerSkywars.map.NopGenerateStage;
 import com.venitymc.PowerSkywars.map.SkywarsMap;
+import com.venitymc.PowerSkywars.map.VoidGenerator;
 import com.venitymc.PowerSkywars.util.Utils;
 import lombok.Getter;
+
 import java.io.File;
 
 public class PowerSkywars extends PluginBase {
@@ -14,8 +17,20 @@ public class PowerSkywars extends PluginBase {
     private static PowerSkywars instance = null;
 
     @Override
+    public void onLoad() {
+        try {
+            Registries.GENERATE_STAGE.register(NopGenerateStage.NAME, NopGenerateStage.class);
+            Registries.GENERATOR.register("void", VoidGenerator.class);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void onEnable() {
         instance = this;
+        Utils.clearGameWorlds();
+
         saveDefaultConfig();
         createMapsFolder();
         saveResource("maps_config.yml");

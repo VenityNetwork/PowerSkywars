@@ -10,23 +10,18 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.TaskHandler;
-import cn.nukkit.scoreboard.Scoreboard;
-import cn.nukkit.scoreboard.data.DisplaySlot;
-import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.utils.Logger;
 import cn.nukkit.utils.TextFormat;
 import com.venitymc.PowerSkywars.game.player.SkywarsPlayer;
+import com.venitymc.PowerSkywars.manager.GameManager;
 import com.venitymc.PowerSkywars.map.SkywarsMap;
-import com.venitymc.PowerSkywars.scoreboard.SkywarsScoreboard;
 import com.venitymc.PowerSkywars.session.Session;
 import com.venitymc.PowerSkywars.session.SessionManager;
-import com.venitymc.PowerSkywars.util.Utils;
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -54,10 +49,9 @@ public class SkywarsGame {
     private int voidY = -20;
 
     public SkywarsGame() {
-        this.logger = new SkywarsLogger(this);
-
         id = UUID.randomUUID().toString();
         map = SkywarsMap.getRandom(this);
+        logger = new SkywarsLogger(this);
         init();
     }
 
@@ -82,6 +76,12 @@ public class SkywarsGame {
 
         if (players.get(nukkitPlayer) != null) {
             return false;
+        }
+
+        Session session = SessionManager.get(nukkitPlayer);
+        SkywarsGame current = session.getGame();
+        if (current != null) {
+            current.quit(nukkitPlayer);
         }
 
         SkywarsPlayer skywarsPlayer = new SkywarsPlayer(nukkitPlayer, this);
@@ -125,6 +125,28 @@ public class SkywarsGame {
         }
     }
 
+    public ArrayList<SkywarsPlayer> getPlayersAlive() {
+        ArrayList<SkywarsPlayer> playersAlive = new ArrayList<>();
+        for (SkywarsPlayer player : players.values()) {
+            if (player.getCombatInfo().isAlive()) {
+                playersAlive.add(player);
+            }
+        }
+
+        return playersAlive;
+    }
+
+    public ArrayList<SkywarsPlayer> getPlayersDead() {
+        ArrayList<SkywarsPlayer> playersDead = new ArrayList<>();
+        for (SkywarsPlayer player : players.values()) {
+            if (!player.getCombatInfo().isAlive()) {
+                playersDead.add(player);
+            }
+        }
+
+        return playersDead;
+    }
+
     public void onPlayerDamaged(EntityDamageEvent event) {
         Player player = (Player) event.getEntity();
         SkywarsPlayer skywarsPlayer = players.get(player);
@@ -138,6 +160,7 @@ public class SkywarsGame {
 
             SkywarsPlayer skywarsDamager = players.get((Player) ((EntityDamageByEntityEvent) event).getDamager());
             if (skywarsDamager == null) {
+                getLogger().info(players.toString());
                 event.setCancelled();
                 return;
             }
@@ -157,6 +180,14 @@ public class SkywarsGame {
         if (event.getTo().getY() <= voidY && skywarsPlayer.getCombatInfo().isAlive()) {
             skywarsPlayer.kill();
         }
+    }
+
+    public void onPlayerChat(Player player, String message) {
+        String formattedMessage = String.format(
+                "%s: %s%s",
+                player.getDisplayName(), TextFormat.WHITE, message
+        );
+        broadcastMessage(formattedMessage);
     }
 
     public int getPlayerCount() {
@@ -210,62 +241,85 @@ public class SkywarsGame {
                 onEndingTick();
                 break;
         }
+        updateScoreboards();
+    }
+
+    private void updateScoreboards() {
+        for (SkywarsPlayer player : players.values()) {
+            player.getScoreboard().update();
+        }
     }
 
     private void onWaitingTick(){
-        String playStatus;
-        if(getPlayerCount() >= 2){
-            playStatus = "Starting in " + time + " seconds...";
+        if (getPlayerCount() >= 2){
             time--;
-        }else{
+        } else {
             time = getWaitingTime();
-            playStatus = "Waiting...";
         }
 
-        for (SkywarsPlayer player : players.values()){
-            SkywarsScoreboard.display(player.getNukkitPlayer(), "sw", TextFormat.AQUA + TextFormat.BOLD.toString() + "SKYWARS", List.of(
-                "",
-                "Map: " + TextFormat.AQUA + getMap().getName(),
-                "Players: " + TextFormat.AQUA + getPlayerCount() + "/" + getMaxPlayers(),
-                "",
-                playStatus,
-                "",
-                "Mode: " + TextFormat.AQUA + "Solo",
-                "",
-                TextFormat.AQUA + "play.venitymc.com"
-            ));
-        }
-
-        if(time <= 0){
+        if (time <= 0) {
             start();
         }
     }
 
-    private void onPlayingTick(){
+    private void onPlayingTick() {
         time--;
 
-        if(time <= 0){
-            // end
+        if (time <= 0) {
+            draw();
         }
     }
 
-    private void onEndingTick(){
+    private void onEndingTick() {
         time--;
 
-        if(time <= 0){
-            // end
+        if (time <= 0) {
+            stop();
+            return;
+        }
+
+        switch (time) {
+            case 5:
+            case 4:
+            case 3:
+            case 2:
+            case 1:
+                broadcastMessage(TextFormat.MINECOIN_GOLD + "Closing in " + TextFormat.RESET + time + "s");
+                break;
         }
     }
 
-    private void stopTicking(){
-        if(tickTaskHandler == null){
+    private void stopTicking() {
+        if (tickTaskHandler == null){
             return;
         }
         tickTaskHandler.cancel();
     }
 
-    public void end(){
-        if(isEnding()){
+    public void checkAlive() {
+        var playersAlive = getPlayersAlive();
+        if (playersAlive.size() == 1) {
+            win(playersAlive.getFirst());
+        }
+    }
+
+    private void win(SkywarsPlayer player) {
+        broadcastMessage(String.format(
+                "%s %shas won the game!",
+                player.getNukkitPlayer().getDisplayName(), TextFormat.GREEN
+        ));
+        player.getNukkitPlayer().sendTitle(TextFormat.BOLD.toString() + TextFormat.GOLD + "VICTORY!");
+        end();
+    }
+
+    private void draw() {
+        broadcastMessage(TextFormat.GREEN + "Game has ended, no one won.");
+        broadcastTitle(TextFormat.BOLD.toString() + TextFormat.RED + "DEFEAT!");
+        end();
+    }
+
+    public void end() {
+        if (isEnding()) {
             return;
         }
 
@@ -273,13 +327,14 @@ public class SkywarsGame {
         time = 10;
     }
 
-    public void stop(){
-        if(stopped.getAndSet(true)){
+    public void stop() {
+        if (stopped.getAndSet(true)) {
             return;
         }
 
-        for(var player : players.keySet()){
+        for (var player : players.keySet()) {
             quit(player);
+            GameManager.findGame(player);
         }
 
         logger.debug("Stop ticking...");
