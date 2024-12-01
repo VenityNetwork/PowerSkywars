@@ -1,7 +1,6 @@
 package com.venitymc.PowerSkywars.listener;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockChest;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.EventHandler;
@@ -12,7 +11,6 @@ import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.utils.TextFormat;
-import com.venitymc.PowerSkywars.PowerSkywars;
 import com.venitymc.PowerSkywars.game.SkywarsGame;
 import com.venitymc.PowerSkywars.manager.GameManager;
 import com.venitymc.PowerSkywars.session.SessionManager;

@@ -31,7 +31,7 @@ public class GameManager {
     }
 
     public static void disposeGame(SkywarsGame game) {
-        synchronized (games) {
+        synchronized (games){
             games.remove(game.getId());
         }
     }

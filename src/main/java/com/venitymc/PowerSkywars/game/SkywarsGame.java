@@ -148,7 +148,18 @@ public class SkywarsGame {
     }
 
     public void onPlayerDamaged(EntityDamageEvent event) {
+        if(!isPlaying()){
+            event.setCancelled();
+            return;
+        }
+
+        if(getPlayingTime() - time <= 10 && event.getCause().equals(EntityDamageEvent.DamageCause.FALL)){
+            event.setCancelled();
+            return;
+        }
+
         Player player = (Player) event.getEntity();
+
         SkywarsPlayer skywarsPlayer = players.get(player);
 
         if (event instanceof EntityDamageByEntityEvent) {
