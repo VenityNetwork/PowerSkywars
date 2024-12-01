@@ -48,7 +48,9 @@ public class Utils {
                     continue;
                 }
 
-                forceUnloadWorld(world);
+                if (world != null) {
+                    forceUnloadWorld(world);
+                }
 
                 try {
                     System.out.println("Deleting world: " + worldFolder.getName());
@@ -72,6 +74,12 @@ public class Utils {
             Files.newInputStream(path).close();
         } catch (IOException ignored) {
         }
+    }
+
+    public static String formatSecondsToMinutesAndSeconds(int totalSeconds) {
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+        return String.format("%d:%02d", minutes, seconds);
     }
 
 }
