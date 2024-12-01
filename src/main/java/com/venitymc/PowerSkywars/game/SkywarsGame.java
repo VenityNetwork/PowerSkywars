@@ -5,6 +5,7 @@ import cn.nukkit.block.BlockChest;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.player.PlayerDeathEvent;
 import cn.nukkit.event.player.PlayerMoveEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
@@ -181,9 +182,18 @@ public class SkywarsGame {
 
         if (event.getFinalDamage() >= player.getHealth()) {
             event.setCancelled();
-            if(skywarsPlayer.getCombatInfo().isAlive()) {
+            if (skywarsPlayer.getCombatInfo().isAlive()) {
                 skywarsPlayer.kill();
             }
+        }
+    }
+
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        event.setCancelled();
+
+        SkywarsPlayer skywarsPlayer = players.get(event.getEntity());
+        if (skywarsPlayer.getCombatInfo().isAlive()) {
+            skywarsPlayer.kill();
         }
     }
 
@@ -356,6 +366,7 @@ public class SkywarsGame {
 
         logger.debug("Closing world...");
         world.unload(true);
+        GameManager.disposeGame(this);
     }
 
     public void ignoreChestFill(BlockChest chest){
