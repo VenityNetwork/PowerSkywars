@@ -5,39 +5,40 @@ import cn.nukkit.inventory.ChestInventory;
 import cn.nukkit.item.Item;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ChestFill {
 
-    private static final List<Item> SWORDS = List.of(
-            Item.get(Item.DIAMOND_SWORD),
-            Item.get(Item.IRON_SWORD),
-            Item.get(Item.STONE_SWORD)
+    private static final List<String> SWORDS = List.of(
+            Item.DIAMOND_SWORD,
+            Item.IRON_SWORD,
+            Item.STONE_SWORD
     );
 
-    private static final List<Item> TOOLS = List.of(
-            Item.get(Item.DIAMOND_AXE),
-            Item.get(Item.IRON_AXE),
-            Item.get(Item.STONE_AXE),
-            Item.get(Item.DIAMOND_PICKAXE),
-            Item.get(Item.IRON_PICKAXE),
-            Item.get(Item.STONE_PICKAXE)
+    private static final List<String> TOOLS = List.of(
+            Item.DIAMOND_AXE,
+            Item.IRON_AXE,
+            Item.STONE_AXE,
+            Item.DIAMOND_PICKAXE,
+            Item.IRON_PICKAXE,
+            Item.STONE_PICKAXE
     );
 
-    private static final List<Item> ARMORS = List.of(
-            Item.get(Item.DIAMOND_HELMET),
-            Item.get(Item.DIAMOND_CHESTPLATE),
-            Item.get(Item.DIAMOND_LEGGINGS),
-            Item.get(Item.DIAMOND_BOOTS),
-            Item.get(Item.IRON_HELMET),
-            Item.get(Item.IRON_CHESTPLATE),
-            Item.get(Item.IRON_LEGGINGS),
-            Item.get(Item.IRON_BOOTS),
-            Item.get(Item.CHAINMAIL_HELMET),
-            Item.get(Item.CHAINMAIL_CHESTPLATE),
-            Item.get(Item.CHAINMAIL_LEGGINGS),
-            Item.get(Item.CHAINMAIL_BOOTS)
+    private static final List<String> ARMORS = List.of(
+            Item.DIAMOND_HELMET,
+            Item.DIAMOND_CHESTPLATE,
+            Item.DIAMOND_LEGGINGS,
+            Item.DIAMOND_BOOTS,
+            Item.IRON_HELMET,
+            Item.IRON_CHESTPLATE,
+            Item.IRON_LEGGINGS,
+            Item.IRON_BOOTS,
+            Item.CHAINMAIL_HELMET,
+            Item.CHAINMAIL_CHESTPLATE,
+            Item.CHAINMAIL_LEGGINGS,
+            Item.CHAINMAIL_BOOTS
     );
 
     private static final List<String> BLOCK_NAMES = List.of(
@@ -57,16 +58,45 @@ public class ChestFill {
             Item.COOKED_SALMON
     );
 
+    private static <T> T listRandom(List<T> list){
+        return list.get(ThreadLocalRandom.current().nextInt(list.size()));
+    }
+
     public static void randomFill(ChestInventory inventory){
         inventory.clearAll();
         var items = new ObjectArrayList<Item>();
-        items.add(SWORDS.get(ThreadLocalRandom.current().nextInt(SWORDS.size())));
+        items.add(Item.get(listRandom(SWORDS)));
 
         int armorCount = Math.random() <= 0.4 ? 2 : 1;
         for(int i = 0; i < armorCount; i++) {
-            items.add(ARMORS.get(ThreadLocalRandom.current().nextInt(SWORDS.size())));
+            items.add(Item.get(listRandom(ARMORS)));
         }
 
-        // TODO: belum beres
+        if(Math.random() <= 0.5) {
+            int toolCount = Math.random() <= 0.3 ? 2 : 1;
+            for (int i = 0; i < toolCount; i++) {
+                items.add(Item.get(listRandom(TOOLS)));
+            }
+        }
+
+        int blockCount = Math.random() <= 0.5 ? 2 : 1;
+        for(int i = 0; i < blockCount; i++) {
+            items.add(Item.get(listRandom(BLOCK_NAMES), 0, ThreadLocalRandom.current().nextInt(20, 64)));
+        }
+
+        int foodCount = Math.random() <= 0.5 ? 2 : 1;
+        for(int i = 0; i < foodCount; i++) {
+            items.add(Item.get(listRandom(FOOD_NAMES), 0, ThreadLocalRandom.current().nextInt(1, 5)));
+        }
+
+        var indexes = new ObjectArrayList<Integer>();
+        for (int i = 0; i < inventory.getSize(); i++) {
+            indexes.add(i);
+        }
+        Collections.shuffle(indexes);
+
+        for (int i = 0; i < items.size(); i++) {
+            inventory.setItem(indexes.get(i), items.get(i));
+        }
     }
 }
