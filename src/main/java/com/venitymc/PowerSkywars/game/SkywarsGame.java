@@ -179,8 +179,11 @@ public class SkywarsGame {
             skywarsPlayer.getCombatInfo().onHitBy(skywarsDamager);
         }
 
-        if (event.getFinalDamage() >= player.getHealth() && skywarsPlayer.getCombatInfo().isAlive()) {
-            skywarsPlayer.kill();
+        if (event.getFinalDamage() >= player.getHealth()) {
+            event.setCancelled();
+            if(skywarsPlayer.getCombatInfo().isAlive()) {
+                skywarsPlayer.kill();
+            }
         }
     }
 
