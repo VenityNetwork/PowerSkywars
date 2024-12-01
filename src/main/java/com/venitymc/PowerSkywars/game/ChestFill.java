@@ -1,6 +1,7 @@
 package com.venitymc.PowerSkywars.game;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.entity.effect.PotionType;
 import cn.nukkit.inventory.ChestInventory;
 import cn.nukkit.item.Item;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -41,14 +42,14 @@ public class ChestFill {
             Item.CHAINMAIL_BOOTS
     );
 
-    private static final List<String> BLOCK_NAMES = List.of(
+    private static final List<String> BLOCKS = List.of(
             Block.DIRT,
             Block.COBBLESTONE,
             Block.STONE,
             Block.OAK_PLANKS
     );
 
-    private static final List<String> FOOD_NAMES = List.of(
+    private static final List<String> FOODS = List.of(
             Item.BREAD,
             Item.CARROT,
             Item.GOLDEN_APPLE,
@@ -56,6 +57,17 @@ public class ChestFill {
             Item.COOKED_BEEF,
             Item.COOKED_CHICKEN,
             Item.COOKED_SALMON
+    );
+
+    private static final List<Integer> POTION_TYPES = List.of(
+            PotionType.SWIFTNESS.id(),
+            PotionType.LEAPING.id(),
+            PotionType.HEALING.id()
+    );
+
+    private static final List<String> PROJECTILES = List.of(
+            Item.SNOWBALL,
+            Item.EGG
     );
 
     private static <T> T listRandom(List<T> list){
@@ -81,12 +93,29 @@ public class ChestFill {
 
         int blockCount = Math.random() <= 0.5 ? 2 : 1;
         for(int i = 0; i < blockCount; i++) {
-            items.add(Item.get(listRandom(BLOCK_NAMES), 0, ThreadLocalRandom.current().nextInt(20, 64)));
+            items.add(Item.get(listRandom(BLOCKS), 0, ThreadLocalRandom.current().nextInt(20, 64)));
         }
 
         int foodCount = Math.random() <= 0.5 ? 2 : 1;
         for(int i = 0; i < foodCount; i++) {
-            items.add(Item.get(listRandom(FOOD_NAMES), 0, ThreadLocalRandom.current().nextInt(1, 5)));
+            items.add(Item.get(listRandom(FOODS), 0, ThreadLocalRandom.current().nextInt(1, 5)));
+        }
+
+        if(Math.random() <= 0.12){
+            items.add(Item.get(Item.BOW, 0, 1));
+            items.add(Item.get(Item.ARROW, 0, ThreadLocalRandom.current().nextInt(5, 16)));
+        }
+
+        if(Math.random() <= 0.1){
+            items.add(Item.get(Item.POTION, listRandom(POTION_TYPES)));
+        }
+
+        if(Math.random() <= 0.08){
+            items.add(Item.get(Item.ENDER_PEARL, 0, ThreadLocalRandom.current().nextInt(1, 3)));
+        }
+
+        if(Math.random() <= 0.4){
+            items.add(Item.get(listRandom(PROJECTILES), 0, ThreadLocalRandom.current().nextInt(8, 16)));
         }
 
         var indexes = new ObjectArrayList<Integer>();
