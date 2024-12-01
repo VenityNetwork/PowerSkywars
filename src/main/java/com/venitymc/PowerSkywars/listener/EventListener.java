@@ -32,6 +32,15 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        event.setCancelled();
+        SkywarsGame game = getGame(event.getEntity());
+        if (game != null) {
+            game.onPlayerDeath(event);
+        }
+    }
+
+    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         event.setJoinMessage("");
         GameManager.findGame(event.getPlayer());
