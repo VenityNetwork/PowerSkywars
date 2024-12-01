@@ -3,6 +3,7 @@ package com.venitymc.PowerSkywars;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.registry.Registries;
 import com.venitymc.PowerSkywars.listener.EventListener;
+import com.venitymc.PowerSkywars.map.NopGenerateStage;
 import com.venitymc.PowerSkywars.map.SkywarsMap;
 import com.venitymc.PowerSkywars.map.VoidGenerator;
 import com.venitymc.PowerSkywars.util.Utils;
@@ -18,6 +19,7 @@ public class PowerSkywars extends PluginBase {
     @Override
     public void onLoad() {
         try {
+            Registries.GENERATE_STAGE.register(NopGenerateStage.NAME, NopGenerateStage.class);
             Registries.GENERATOR.register("void", VoidGenerator.class);
         }catch (Exception e){
             e.printStackTrace();
