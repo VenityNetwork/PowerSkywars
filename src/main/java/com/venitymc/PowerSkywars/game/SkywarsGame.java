@@ -300,9 +300,9 @@ public class SkywarsGame {
             return;
         }
 
-        var chestInv = chest.getBlockEntity();
-        if(chestInv != null){
-            // TODO: refill chest
+        var chestBlockEntity = chest.getBlockEntity();
+        if(chestBlockEntity != null){
+            ChestFill.randomFill(chestBlockEntity.getRealInventory());
         }
 
         ignoreChestFill.put(hash, true);
