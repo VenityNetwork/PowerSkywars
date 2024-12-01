@@ -62,6 +62,7 @@ public class SkywarsMap {
             throw new RuntimeException("World can't be loaded.");
         }
         world.getGameRules().setGameRule(GameRule.DO_MOB_SPAWNING, false);
+        world.getGameRules().setGameRule(GameRule.PVP, true);
         world.setTime(4000);
         world.stopTime();
         for(var entity : world.getEntities()){
