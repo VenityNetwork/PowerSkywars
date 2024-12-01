@@ -2,6 +2,7 @@ package com.venitymc.PowerSkywars;
 
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.registry.Registries;
+import cn.nukkit.utils.TextFormat;
 import com.venitymc.PowerSkywars.listener.EventListener;
 import com.venitymc.PowerSkywars.map.NopGenerateStage;
 import com.venitymc.PowerSkywars.map.SkywarsMap;
@@ -12,6 +13,8 @@ import lombok.Getter;
 import java.io.File;
 
 public class PowerSkywars extends PluginBase {
+
+    public static final String SCOREBOARD_FOOTER = TextFormat.AQUA + "play.venitymc.com";
 
     @Getter
     private static PowerSkywars instance = null;

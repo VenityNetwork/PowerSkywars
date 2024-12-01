@@ -6,6 +6,7 @@ import cn.nukkit.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.utils.TextFormat;
+import com.venitymc.PowerSkywars.PowerSkywars;
 import com.venitymc.PowerSkywars.game.GameStatus;
 import com.venitymc.PowerSkywars.game.SkywarsGame;
 import com.venitymc.PowerSkywars.game.player.SkywarsPlayer;
@@ -75,7 +76,7 @@ public class SkywarsScoreboard {
                     "Map: " + TextFormat.AQUA + game.getMap().getName(),
                     "Mode: " + TextFormat.AQUA + "Solo",
                     "",
-                    TextFormat.AQUA + "play.venitymc.com"
+                    PowerSkywars.SCOREBOARD_FOOTER
                 );
             case PLAYING:
                 return List.of(
@@ -89,7 +90,7 @@ public class SkywarsScoreboard {
                         "Map: " + TextFormat.AQUA + game.getMap().getName(),
                         "Mode: " + TextFormat.AQUA + "Solo",
                         "",
-                        TextFormat.AQUA + "play.venitymc.com"
+                        PowerSkywars.SCOREBOARD_FOOTER
                 );
             case ENDING:
                 return List.of(
@@ -103,7 +104,7 @@ public class SkywarsScoreboard {
                         "Map: " + TextFormat.AQUA + game.getMap().getName(),
                         "Mode: " + TextFormat.AQUA + "Solo",
                         "",
-                        TextFormat.AQUA + "play.venitymc.com"
+                        PowerSkywars.SCOREBOARD_FOOTER
                 );
         }
         return List.of("");
