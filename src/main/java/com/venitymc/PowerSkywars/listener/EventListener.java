@@ -6,6 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
+import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.block.BlockPlaceEvent;
 import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -111,6 +112,22 @@ public class EventListener implements Listener {
         SkywarsGame game = getGame(player);
         if (game != null) {
             game.onPlayerMoved(event);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onBlockBreak(BlockBreakEvent event){
+        Player player = event.getPlayer();
+        SkywarsGame game = getGame(player);
+        if (game != null) {
+            if(!game.isPlaying()){
+                event.setCancelled();
+                return;
+            }
+
+            if(event.getBlock() instanceof BlockChest chest){
+                game.onChestBreak(player, chest);
+            }
         }
     }
 

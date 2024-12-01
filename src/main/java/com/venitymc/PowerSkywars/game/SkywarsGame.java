@@ -364,6 +364,14 @@ public class SkywarsGame {
     }
 
     public void onChestOpen(Player player, BlockChest chest) {
+        fillChestIfNotIgnored(chest);
+    }
+
+    public void onChestBreak(Player player, BlockChest chest) {
+        fillChestIfNotIgnored(chest);
+    }
+
+    private void fillChestIfNotIgnored(BlockChest chest){
         var hash = Level.chunkBlockHash(chest.getFloorX(), chest.getFloorY(), chest.getFloorZ());
         if(ignoreChestFill.containsKey(hash)){
             return;
