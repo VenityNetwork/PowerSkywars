@@ -52,12 +52,12 @@ public class SkywarsPlayer {
         player.setImmobile(true);
         player.teleport(spawnPos.add(0, 0.2, 0));
         player.setGamemode(Player.ADVENTURE);
-        player.setImmobile(false);
         reset();
     }
 
     public void onStart() {
         player.setGamemode(Player.SURVIVAL);
+        player.setImmobile(false);
         cage.unset();
     }
 

@@ -352,7 +352,7 @@ public class SkywarsGame {
         stopTicking();
 
         logger.debug("Closing world...");
-        world.close();
+        world.unload(true);
     }
 
     public void ignoreChestFill(BlockChest chest){
